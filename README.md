@@ -4,9 +4,11 @@ Keeper Verse is a goalkeeper scouting and performance-tracking application built
 
 ## Deploy
 
-Deploy this project to Vercel:
+Deploy this React/Vite project to Netlify:
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Faryanbbpsgr-png%2FKEEPER-VERSE&project-name=keeper-verse)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https%3A%2F%2Fgithub.com%2Faryanbbpsgr-png%2FKEEPER-VERSE)
+
+Netlify builds the app with `npm run build` and publishes the `dist` directory.
 
 ## Run locally
 
