@@ -247,6 +247,23 @@ export function App() {
     playUiClick();
   };
 
+  const handleRemoveKeeper = () => {
+    const keeperToRemove = keepers.find(keeper => keeper.id === activeKeeperId);
+    if (!keeperToRemove || keepers.length <= 1) return;
+
+    const confirmed = window.confirm(
+      `Remove ${keeperToRemove.name} and all of their saved match logs? This cannot be undone.`
+    );
+    if (!confirmed) return;
+
+    const remainingKeepers = keepers.filter(keeper => keeper.id !== keeperToRemove.id);
+    setKeepers(remainingKeepers);
+    setMatches(previousMatches => previousMatches.filter(match => match.keeperId !== keeperToRemove.id));
+    setActiveKeeperId(remainingKeepers[0].id);
+    setActiveTab('dashboard');
+    playSaveSound();
+  };
+
   // If user navigated to full dedicated Login Page
   if (currentView === 'login-page') {
     return (
@@ -266,6 +283,7 @@ export function App() {
         keepers={keepers}
         activeKeeperId={activeKeeperId}
         onSelectKeeper={(id) => setActiveKeeperId(id)}
+        onRemoveKeeper={handleRemoveKeeper}
         onOpenDirectoryModal={() => setIsDirectoryModalOpen(true)}
         onOpenMatchLogger={() => setIsMatchLoggerOpen(true)}
         isMuted={isMuted}

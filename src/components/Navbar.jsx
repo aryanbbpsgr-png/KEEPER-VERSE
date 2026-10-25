@@ -13,7 +13,8 @@ import {
   Globe, 
   Sun,
   Moon,
-  Shield
+  Shield,
+  Trash2
 } from 'lucide-react';
 import { playUiClick } from '../utils/audio';
 
@@ -21,6 +22,7 @@ export function Navbar({
   keepers, 
   activeKeeperId, 
   onSelectKeeper, 
+  onRemoveKeeper,
   onOpenDirectoryModal,
   onOpenMatchLogger, 
   isMuted, 
@@ -153,6 +155,21 @@ export function Navbar({
               ))}
             </select>
           </div>
+
+          <button
+            className="btn btn-danger nav-remove-keeper-btn"
+            type="button"
+            title={keepers.length <= 1 ? 'Keep at least one goalkeeper in the roster' : `Remove ${activeKeeper?.name} from the roster`}
+            aria-label={`Remove ${activeKeeper?.name || 'selected goalkeeper'} from the roster`}
+            disabled={keepers.length <= 1}
+            onClick={() => {
+              playUiClick();
+              onRemoveKeeper();
+            }}
+          >
+            <Trash2 size={14} />
+            <span>Remove Keeper</span>
+          </button>
 
           {/* Light / Dark Mode Toggle */}
           <button 

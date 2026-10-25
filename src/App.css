@@ -3612,3 +3612,218 @@
     padding: 24px 16px;
   }
 }
+
+.nav-remove-keeper-btn {
+  flex-shrink: 0;
+}
+
+.keeper-game-panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin-top: 30px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.keeper-game-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.keeper-game-title {
+  margin-top: 12px;
+  font-size: clamp(20px, 2.5vw, 28px);
+}
+
+.keeper-game-description {
+  max-width: 650px;
+  margin-top: 6px;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.keeper-game-score {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: 11px;
+  letter-spacing: 0.07em;
+}
+
+.keeper-game-score strong {
+  color: var(--text-primary);
+  font-size: 25px;
+}
+
+.keeper-game-score strong span {
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+.keeper-game-play-area {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(200px, 0.6fr);
+  align-items: center;
+  gap: 24px;
+}
+
+.keeper-game-goal {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 5px;
+  aspect-ratio: 2.25 / 1;
+  min-height: 160px;
+  padding: 10px;
+  border: 5px solid var(--border-medium);
+  border-bottom-width: 9px;
+  border-radius: 14px 14px 6px 6px;
+  background:
+    linear-gradient(0deg, transparent 49.5%, var(--border-subtle) 50%, transparent 50.5%),
+    linear-gradient(90deg, transparent 33%, var(--border-subtle) 33.4%, transparent 33.8%, transparent 66%, var(--border-subtle) 66.4%, transparent 66.8%),
+    var(--bg-card);
+  box-shadow: inset 0 0 22px rgba(2, 132, 199, 0.06);
+}
+
+.keeper-game-zone {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: rgba(2, 132, 199, 0.035);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: clamp(9px, 1.15vw, 12px);
+  cursor: pointer;
+  transition: background 0.16s ease, border-color 0.16s ease, transform 0.16s ease;
+}
+
+.keeper-game-zone:disabled {
+  cursor: default;
+}
+
+.keeper-game-goal.is-live .keeper-game-zone:not(:disabled):hover {
+  transform: scale(0.96);
+  border-color: var(--neon-green);
+  background: var(--neon-green-subtle);
+}
+
+.keeper-game-zone.shot-target {
+  border-color: var(--neon-gold);
+  background: var(--neon-gold-subtle);
+  color: var(--neon-gold);
+}
+
+.keeper-game-ball {
+  display: inline-flex;
+  width: 28px;
+  height: 28px;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--neon-gold);
+  border-radius: 50%;
+  background: var(--bg-card);
+  box-shadow: 0 0 0 5px var(--neon-gold-subtle), 0 4px 12px rgba(15, 23, 42, 0.16);
+  color: var(--neon-gold);
+  font-size: 12px;
+  animation: keeperShotPulse 0.55s ease-in-out infinite alternate;
+}
+
+@keyframes keeperShotPulse {
+  to {
+    transform: scale(1.12);
+  }
+}
+
+.keeper-game-zone-label {
+  opacity: 0.75;
+}
+
+.keeper-game-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.keeper-game-status {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.keeper-game-status.is-save {
+  color: var(--neon-green);
+}
+
+.keeper-game-start {
+  min-height: 40px;
+}
+
+.keeper-game-progress {
+  display: flex;
+  gap: 8px;
+}
+
+.keeper-game-progress span {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-subtle);
+  border-radius: 50%;
+  background: var(--bg-surface);
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+.keeper-game-progress span.is-complete {
+  border-color: var(--neon-green);
+  background: var(--neon-green-subtle);
+  color: var(--neon-green);
+}
+
+@media (max-width: 768px) {
+  .nav-remove-keeper-btn {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .keeper-game-heading {
+    align-items: flex-start;
+  }
+
+  .keeper-game-play-area {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .keeper-game-goal {
+    min-height: 140px;
+  }
+
+  .keeper-game-controls {
+    align-items: stretch;
+  }
+
+  .keeper-game-start {
+    align-self: flex-start;
+  }
+}

@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { 
+  ArrowRight,
+  Check,
+  Clock3,
+  Hand,
+  Play,
+  RotateCcw,
   Sparkles, 
   ShieldCheck, 
   Compass, 
@@ -12,9 +18,101 @@ import {
 } from 'lucide-react';
 import { playUiClick, playSaveSound } from '../utils/audio';
 
+const GOAL_ZONES = [
+  { label: 'Top left', shortLabel: 'Top left' },
+  { label: 'Top center', shortLabel: 'Top center' },
+  { label: 'Top right', shortLabel: 'Top right' },
+  { label: 'Middle left', shortLabel: 'Middle left' },
+  { label: 'Center', shortLabel: 'Center' },
+  { label: 'Middle right', shortLabel: 'Middle right' },
+  { label: 'Bottom left', shortLabel: 'Bottom left' },
+  { label: 'Bottom center', shortLabel: 'Bottom center' },
+  { label: 'Bottom right', shortLabel: 'Bottom right' }
+];
+
+const randomGoalZone = () => Math.floor(Math.random() * GOAL_ZONES.length);
+
 export function ThreeDBeautificationBanner() {
   const [isHovered, setIsHovered] = useState(false);
   const [activeTab3D, setActiveTab3D] = useState('philosophy');
+  const [game, setGame] = useState({
+    status: 'idle',
+    shots: 0,
+    saves: 0,
+    target: null,
+    shotResolved: false,
+    result: ''
+  });
+
+  useEffect(() => {
+    if (game.status !== 'playing') return undefined;
+
+    const timeout = window.setTimeout(() => {
+      setGame(current => {
+        if (current.status !== 'playing' || current.shotResolved) return current;
+
+        return {
+          ...current,
+          shots: current.shots + 1,
+          shotResolved: true,
+          result: 'GOAL — react faster on the next shot.'
+        };
+      });
+    }, 2200);
+
+    return () => window.clearTimeout(timeout);
+  }, [game.status, game.shotResolved, game.shots, game.target]);
+
+  useEffect(() => {
+    if (game.status !== 'playing' || !game.shotResolved) return undefined;
+
+    const timeout = window.setTimeout(() => {
+      setGame(current => {
+        if (current.status !== 'playing' || !current.shotResolved) return current;
+        if (current.shots >= 5) return { ...current, status: 'complete' };
+
+        return {
+          ...current,
+          target: randomGoalZone(),
+          shotResolved: false,
+          result: ''
+        };
+      });
+    }, 900);
+
+    return () => window.clearTimeout(timeout);
+  }, [game.status, game.shotResolved, game.shots]);
+
+  const startGame = () => {
+    playUiClick();
+    setGame({
+      status: 'playing',
+      shots: 0,
+      saves: 0,
+      target: randomGoalZone(),
+      shotResolved: false,
+      result: ''
+    });
+  };
+
+  const diveForShot = (zoneIndex) => {
+    if (game.status !== 'playing' || game.shotResolved) return;
+    playUiClick();
+    if (zoneIndex === game.target) playSaveSound();
+
+    setGame(current => {
+      if (current.status !== 'playing' || current.shotResolved) return current;
+      const saved = zoneIndex === current.target;
+
+      return {
+        ...current,
+        shots: current.shots + 1,
+        saves: current.saves + Number(saved),
+        shotResolved: true,
+        result: saved ? 'SAVE! Perfect dive.' : 'GOAL — read the shot and try again.'
+      };
+    });
+  };
 
   return (
     <section className="threed-beautification-section glass-panel">
@@ -157,6 +255,77 @@ export function ThreeDBeautificationBanner() {
               <strong className="metric-num text-neon-green">99.4%</strong>
               <span className="metric-note">Opta-Grade Telemetry</span>
             </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="keeper-game-panel">
+        <div className="keeper-game-heading">
+          <div>
+            <div className="subhead-pill">
+              <Hand size={14} />
+              <span>REFLEX CHALLENGE</span>
+            </div>
+            <h3 className="keeper-game-title">Can you keep it out?</h3>
+            <p className="keeper-game-description">
+              Dive to the highlighted zone before the 2.2-second shot clock runs out. Make five saves to complete the challenge.
+            </p>
+          </div>
+          <div className="keeper-game-score mono" aria-live="polite">
+            <span>SAVES</span>
+            <strong>{game.saves}<span> / 5</span></strong>
+          </div>
+        </div>
+
+        <div className="keeper-game-play-area">
+          <div
+            className={`keeper-game-goal ${game.status === 'playing' && !game.shotResolved ? 'is-live' : ''}`}
+            role="group"
+            aria-label="Goalkeeper dive controls"
+          >
+            {GOAL_ZONES.map((zone, index) => (
+              <button
+                key={zone.label}
+                type="button"
+                className={`keeper-game-zone ${game.target === index && game.status === 'playing' ? 'shot-target' : ''}`}
+                aria-label={`Dive ${zone.label}${game.target === index && game.status === 'playing' ? ', shot incoming' : ''}`}
+                disabled={game.status !== 'playing' || game.shotResolved}
+                onClick={() => diveForShot(index)}
+              >
+                {game.target === index && game.status === 'playing' && !game.shotResolved
+                  ? <span className="keeper-game-ball" aria-hidden="true">●</span>
+                  : <span className="keeper-game-zone-label">{zone.shortLabel}</span>}
+              </button>
+            ))}
+          </div>
+
+          <div className="keeper-game-controls">
+            <p className={`keeper-game-status ${game.result.startsWith('SAVE') ? 'is-save' : ''}`} aria-live="polite">
+              {game.status === 'idle' && 'Ready when you are. Start the challenge to face five shots.'}
+              {game.status === 'playing' && !game.shotResolved && (
+                <><Clock3 size={15} /> Shot incoming — dive to the ball!</>
+              )}
+              {game.status === 'playing' && game.shotResolved && game.result}
+              {game.status === 'complete' && `Full time! You saved ${game.saves} of 5 shots.`}
+            </p>
+
+            {game.status === 'idle' ? (
+              <button className="btn btn-primary keeper-game-start" type="button" onClick={startGame}>
+                <Play size={15} /> Start challenge
+              </button>
+            ) : game.status === 'complete' ? (
+              <button className="btn btn-secondary keeper-game-start" type="button" onClick={startGame}>
+                <RotateCcw size={15} /> Play again <ArrowRight size={15} />
+              </button>
+            ) : (
+              <div className="keeper-game-progress" aria-label={`Shot ${Math.min(game.shots + 1, 5)} of 5`}>
+                {Array.from({ length: 5 }, (_, index) => (
+                  <span key={index} className={index < game.shots ? 'is-complete' : ''}>
+                    {index < game.saves && index < game.shots ? <Check size={12} /> : index + 1}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
