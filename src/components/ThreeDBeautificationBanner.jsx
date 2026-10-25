@@ -268,7 +268,7 @@ export function ThreeDBeautificationBanner() {
             </div>
             <h3 className="keeper-game-title">Can you keep it out?</h3>
             <p className="keeper-game-description">
-              Dive to the highlighted zone before the 2.2-second shot clock runs out. Make five saves to complete the challenge.
+              Face five shots and dive to the highlighted zone before the 2.2-second shot clock runs out.
             </p>
           </div>
           <div className="keeper-game-score mono" aria-live="polite">
